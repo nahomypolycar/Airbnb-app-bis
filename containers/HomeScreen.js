@@ -18,7 +18,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <Text>Welcome home!</Text>
+        <Text>Welcome </Text>
         {/* <Button
       title="Go to Profile"
       onPress={() => {
