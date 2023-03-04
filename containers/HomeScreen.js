@@ -7,10 +7,13 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  Flatlist,
+  FlatList,
+  TouchableOpacity,
+  ImageBackground,
 } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -32,25 +35,63 @@ export default function HomeScreen() {
     fetchdata();
   }, []);
 
-  return (
+  const reviewsStars = (rate) => {
+    const tab = [];
+
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rate) {
+        tab.push(<AntDesign name="star" size={24} color="#FFB100" />);
+      } else {
+        tab.push(<AntDesign name="star" size={24} color="#BBBBBB" />);
+      }
+    }
+    return tab;
+  };
+
+  return isLoading ? (
+    "loading"
+  ) : (
     <SafeAreaView style={styles.container}>
-      <Flatlist
+      <FlatList
         data={rooms}
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => {
-          return <Text>{item.title}</Text>;
+          return (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Room", { id: item._id })}
+            >
+              <ImageBackground
+                source={{ uri: item.photos[0].url }}
+                style={styles.imageBg}
+              >
+                <View style={styles.priceTag}>
+                  <Text style={styles.price}>{item.price} € </Text>
+                </View>
+              </ImageBackground>
+              <View style={styles.roomsInfo}>
+                <View>
+                  <Text style={styles.roomsTitle}>{item.title} </Text>
+                  <View style={styles.reviews}>
+                    <Text>{reviewsStars(item.ratingValue)}</Text>
+                    <Text style={styles.reviewsNbr}>
+                      {item.reviews} reviews
+                    </Text>
+                  </View>
+                </View>
+                <Image
+                  source={{ uri: item.user.account.photo.url }}
+                  style={styles.avatar}
+                />
+              </View>
+            </TouchableOpacity>
+          );
         }}
+        style={styles.flatlist}
       >
         <View>
           <Text>Welcome </Text>
-          {/* <Button
-      title="Go to Profile"
-      onPress={() => {
-        navigation.navigate("Profile", { userId: 123 });
-      }}
-    /> */}
         </View>
-      </Flatlist>
+      </FlatList>
     </SafeAreaView>
   );
 }
@@ -66,5 +107,46 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     paddingVertical: 30,
+  },
+  // ------------------- ROOMS --------------------
+
+  flatlist: {
+    paddingHorizontal: 20,
+  },
+  imageBg: {
+    width: "100%",
+    height: 250,
+  },
+  priceTag: {
+    backgroundColor: "black",
+    width: 70,
+    height: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 200,
+  },
+  price: {
+    color: "white",
+    fontWeight: "bold",
+  },
+  avatar: {
+    height: 80,
+    width: 80,
+    borderRadius: 50,
+  },
+  roomsInfo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  roomsTitle: {
+    fontSize: 16,
+  },
+  reviews: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 10,
+  },
+  reviewsNbr: {
+    paddingLeft: 10,
   },
 });

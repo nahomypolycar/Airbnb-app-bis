@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import HomeScreen from "./containers/HomeScreen";
-import ProfileScreen from "./containers/ProfileScreen";
+import RoomScreen from "./containers/RoomScreen";
 import SignInScreen from "./containers/SignInScreen";
 import SignUpScreen from "./containers/SignUpScreen";
 import SettingsScreen from "./containers/SettingsScreen";
@@ -127,31 +127,23 @@ export default function App() {
                       >
                         {() => <HomeScreen />}
                       </Stack.Screen>
-                    </Stack.Navigator>
-                  )}
-                </Tab.Screen>
-                <Tab.Screen
-                  name="TabProfile"
-                  options={{
-                    tabBarLabel: "My profil",
-                    tabBarIcon: ({ color, size }) => (
-                      <AntDesign name="user" size={24} color="#EB5A62" />
-                    ),
-                  }}
-                >
-                  {() => (
-                    <Stack.Navigator>
                       <Stack.Screen
-                        name="Profile"
+                        name="Room"
                         options={{
-                          title: "User Profile",
+                          headerTitle: (props) => (
+                            <HeaderLogoStyle {...props} />
+                          ),
+                          headerStyle: {
+                            backgroundColor: "white",
+                          },
                         }}
                       >
-                        {() => <ProfileScreen />}
+                        {() => <RoomScreen />}
                       </Stack.Screen>
                     </Stack.Navigator>
                   )}
                 </Tab.Screen>
+
                 <Tab.Screen
                   name="TabSettings"
                   options={{
