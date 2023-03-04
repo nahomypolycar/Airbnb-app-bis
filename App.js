@@ -19,7 +19,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator(); // gère l'ensemble des screens & permet d'avoir l'hsitorique du parcours de l'utilisateur
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setisLoading] = useState(true);
   const [userToken, setUserToken] = useState(null);
 
   const HeaderLogoStyle = ({ props }) => {
@@ -64,7 +64,7 @@ export default function App() {
       setUserToken(userToken);
       // mettre à jour le token
 
-      setIsLoading(false);
+      setisLoading(false);
     };
 
     bootstrapAsync();
