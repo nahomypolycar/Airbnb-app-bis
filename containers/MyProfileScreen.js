@@ -13,6 +13,7 @@ import { defaultUserImg } from "../assets/defaultUserImg.jpeg";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as ImagePicker from "expo-image-picker";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -22,6 +23,7 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
   const [username, setUsername] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setisLoading] = useState(true);
+  const [choosenAvatar, setchooserAvatar] = useState(null);
 
   console.log("token >>>>>", userToken, "id >>>>", userId);
 
@@ -53,6 +55,20 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
     getUserInfos();
   }, []);
 
+  const getPermissionAndGetPicture = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status === granted) {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+      });
+    }
+  };
+
+  // const getAccessCamera = async () = {
+
+  // }
+
   return (
     <KeyboardAwareScrollView style={styles.container}>
       <View>
@@ -60,7 +76,7 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
           {/* Si il n'y a pas d'image de déposé, avoir une image par défaut  */}
           <View>
             {avatar ? (
-              <Image style={styles.avatar} source={avatar} />
+              <Image style={styles.avatar} source={{ uri: avatar }} />
             ) : (
               <Ionicons
                 name="md-person-circle-sharp"

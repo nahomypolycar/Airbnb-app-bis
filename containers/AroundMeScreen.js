@@ -24,22 +24,23 @@ const AroundMe = () => {
         if (status === "granted") {
           const { coords } = await Location.getCurrentPositionAsync();
           setCoordinates([coords.latitude, coords.longitude]);
+          console.log("coords around me page >>>>>", coords);
 
           const { data } = await axios.get(
             `https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/rooms/around?latitude=${coords.latitude}&longitude=${coords.longitude}`
           );
           setRooms(data);
+          console.log("rooms data >>>>", data);
         } else {
           alert(" Permission denied");
           const { data } = await axios.get(
             `https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/rooms/around`
           );
-
-          setRooms(data);
         }
       } catch (error) {
         console.log(error.response);
       }
+
       setisLoading(false);
     };
 
@@ -61,17 +62,17 @@ const AroundMe = () => {
         }}
         showsUserLocation={true}
       >
-        {/* {rooms.map(() => {
+        {rooms.map((room) => {
           return (
             <Marker
-              key={rooms._id}
+              key={room._id}
               coordinate={{
-                latitude: rooms.location[0],
-                longitude: rooms.location[1],
+                latitude: room.location[1],
+                longitude: room.location[0],
               }}
             />
           );
-        })} */}
+        })}
       </MapView>
     </View>
   );
