@@ -28,9 +28,8 @@ export default function SignInScreen({ setToken, navigation }) {
           { email, password }
         );
 
-        console.log("response >>>>", response.data.token);
         alert("vous êtes connecté", response.data.token);
-        setToken(response.data.token);
+        setToken(response.data.token, response.data.id);
       } catch (error) {
         console.log(error.response.data);
         setErrorMessage(error.response.data.error);

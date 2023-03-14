@@ -14,6 +14,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
+import reviewsStars from "../components/Reviews";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -35,21 +36,8 @@ export default function HomeScreen() {
     fetchdata();
   }, []);
 
-  const reviewsStars = (rate) => {
-    const tab = [];
-
-    for (let i = 1; i <= 5; i++) {
-      if (i <= rate) {
-        tab.push(<AntDesign name="star" size={24} color="#FFB100" />);
-      } else {
-        tab.push(<AntDesign name="star" size={24} color="#BBBBBB" />);
-      }
-    }
-    return tab;
-  };
-
   return isLoading ? (
-    "loading"
+    <Text>loading</Text>
   ) : (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -101,7 +89,6 @@ const styles = StyleSheet.create({
     height: 130,
     width: 150,
     resizeMode: "contain",
-    marginTop: 120,
   },
   container: {
     flex: 1,
@@ -137,6 +124,10 @@ const styles = StyleSheet.create({
   roomsInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#BBBBBB",
+    marginBottom: 20,
   },
   roomsTitle: {
     fontSize: 16,

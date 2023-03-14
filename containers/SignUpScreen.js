@@ -31,7 +31,7 @@ export default function SignUpScreen({ setToken, navigation }) {
             { email, username, description, password }
           );
           console.log(response.data);
-          setToken(response.data.token);
+          setToken(response.data.token, response.data.id);
           alert("vous êtes bien inscrit");
         } catch (error) {
           setErrorMessage("Error occured");
