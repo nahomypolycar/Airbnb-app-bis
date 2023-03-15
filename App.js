@@ -163,6 +163,19 @@ export default function App() {
                       >
                         {() => <AroundMeScreen />}
                       </Stack.Screen>
+                      <Stack.Screen
+                        name="Room"
+                        options={{
+                          headerTitle: (props) => <HeaderLogo {...props} />,
+                          headerStyle: {
+                            backgroundColor: "white",
+                          },
+                          headerBackTitleVisible: false,
+                          headerLeft: () => <CustomGoback />,
+                        }}
+                      >
+                        {() => <RoomScreen />}
+                      </Stack.Screen>
                     </Stack.Navigator>
                   )}
                 </Tab.Screen>

@@ -23,9 +23,11 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
   const [username, setUsername] = useState("");
   const [description, setDescription] = useState("");
   const [isLoading, setisLoading] = useState(true);
-  const [choosenAvatar, setchooserAvatar] = useState(null);
+  const [isUpdating, setisUpdating] = useState(false);
+  const [avatarModified, setAvatarModified] = useState(false);
+  const [inputModified, setinputModified] = useState(false);
 
-  console.log("token >>>>>", userToken, "id >>>>", userId);
+  //console.log("token >>>>>", userToken, "id >>>>", userId);
 
   useEffect(() => {
     const getUserInfos = async () => {
@@ -39,14 +41,13 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
           }
         );
 
-        console.log("infos >>>>>>", infos.data);
+        //console.log("infos >>>>>>", infos.data);
         setEmail(infos.data.email);
         setUsername(infos.data.username);
         setDescription(infos.data.description);
         if (infos.data.photo) {
           setAvatar(infos.data.photo.url);
         }
-        console.log("avatar >>>>", avatar);
       } catch (error) {
         console.log("catch error>>>>>", error.response);
       }
@@ -57,17 +58,93 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
 
   const getPermissionAndGetPicture = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status === granted) {
+    console.log("status>>>>", status);
+    if (status === "granted") {
       const result = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: true,
         aspect: [1, 1],
       });
+      console.log("result >>>>>", result);
+      if (result.canceled === true) {
+        alert("Pas de photo sélectionnée");
+      } else {
+        setAvatar(result.assets[0].uri);
+        setAvatarModified(true);
+      }
+    } else {
+      alert("Permission refusée");
     }
   };
 
-  // const getAccessCamera = async () = {
+  const getAccessCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status === "granted") {
+      const result = await ImagePicker.launchCameraAsync();
+      console.log("result camera test>>>>>", result);
+      if (result.canceled === true) {
+        alert("no picture choosen");
+      } else {
+        setAvatar(result.assets[0].uri);
+        setAvatarModified(true);
+      }
+    } else {
+      alert("Permission denied");
+    }
+  };
 
-  // }
+  const update = async () => {
+    setisUpdating(true);
+
+    try {
+      if (inputModified) {
+        const newInfos = await axios.put(
+          "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/update",
+          {
+            email: email,
+            description: description,
+            username: username,
+          },
+          {
+            headers: {
+              authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+        alert("Information updated");
+        console.log("infos sauvegardées");
+      } else {
+        console.log("no modification");
+      }
+      if (avatarModified) {
+        const extension = avatar.split(".").pop();
+
+        const formData = new FormData();
+        formData.append("photo", {
+          uri: avatar,
+          name: `my-pic.${extension}`,
+          type: `image/${extension}`,
+        });
+
+        const updatedAvatar = await axios.put(
+          "https://lereacteur-bootcamp-api.herokuapp.com/api/airbnb/user/upload_picture",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              authorization: `Bearer ${userToken}`,
+            },
+          }
+        );
+        alert("Information updated");
+        console.log("picture sauvegardées");
+      } else {
+        console.log("no picture updated");
+      }
+    } catch (error) {
+      error.response;
+    }
+    setisUpdating(false);
+  };
 
   return (
     <KeyboardAwareScrollView style={styles.container}>
@@ -87,15 +164,23 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
           </View>
 
           <View>
-            <TouchableOpacity style={{ marginBottom: 15 }}>
+            <TouchableOpacity
+              style={{ marginBottom: 15 }}
+              onPress={() => {
+                getPermissionAndGetPicture();
+              }}
+            >
               <MaterialIcons name="photo-library" size={30} color="#717171" />
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                getAccessCamera();
+              }}
+            >
               <MaterialIcons name="photo-camera" size={30} color="#717171" />
             </TouchableOpacity>
           </View>
         </View>
-
         {/* Objectif avoir les informations de l'utilisateurs qui s'affichent et quand on clique dessus on ça revien à 0 et on peut mdoifier  */}
         <TextInput
           style={styles.textInput}
@@ -103,6 +188,7 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
           value={email}
           onChangeText={(text) => {
             setEmail(text);
+            setinputModified(true);
           }}
         ></TextInput>
         <TextInput
@@ -111,6 +197,7 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
           value={username}
           onChangeText={(text) => {
             setUsername(text);
+            setinputModified(true);
           }}
         ></TextInput>
         <TextInput
@@ -120,12 +207,19 @@ export default function MyProfileScreen({ setToken, userToken, userId }) {
           value={description}
           onChangeText={(text) => {
             setDescription(text);
+            setinputModified(true);
           }}
         ></TextInput>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            update();
+          }}
+        >
           <Text style={styles.buttonText}>Update</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           title="Log Out"
           onPress={() => {

@@ -7,6 +7,7 @@ import {
   ImageBackground,
   Image,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ import reviewsStars from "../components/Reviews";
 import Swiper from "react-native-swiper";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function RoomScreen() {
   const route = useRoute();
@@ -24,6 +26,7 @@ export default function RoomScreen() {
   const [error, setError] = useState();
   const [latitude, setLatitude] = useState();
   const [longitude, setLongitude] = useState();
+  const [display, setDisplay] = useState(3);
 
   useEffect(() => {
     const fetchdata = async () => {
@@ -38,7 +41,7 @@ export default function RoomScreen() {
       }
     };
     fetchdata();
-    console.log("c'est la room", room);
+    console.log("c'est la room", room.photos.length);
   }, []);
 
   useEffect(() => {
@@ -69,14 +72,21 @@ export default function RoomScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View>
-          <ImageBackground
-            source={{ uri: room.photos[0].url }}
-            style={styles.imageBg}
-          >
-            <View style={styles.priceTag}>
-              <Text style={styles.price}>{room.price} € </Text>
-            </View>
-          </ImageBackground>
+          <Swiper style={{ horizontal: false, height: 250, autoplay: true }}>
+            {room.photos.map((photo) => {
+              return (
+                <ImageBackground
+                  source={{ uri: photo.url }}
+                  style={styles.imageBg}
+                  key={photo.picture_id}
+                >
+                  <View style={styles.priceTag}>
+                    <Text style={styles.price}>{room.price} € </Text>
+                  </View>
+                </ImageBackground>
+              );
+            })}
+          </Swiper>
 
           <View style={styles.roomsInfo}>
             <View>
@@ -92,10 +102,28 @@ export default function RoomScreen() {
               style={styles.avatar}
             />
           </View>
-          <Text>{room.description}</Text>
+          <Text numberOfLines={display}>{room.description}</Text>
+          {display === 3 ? (
+            <TouchableOpacity
+              onPress={() => {
+                setDisplay(0);
+              }}
+            >
+              <Text>Show more</Text>
+              <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                setDisplay(3);
+              }}
+            >
+              <Text>Show less</Text>
+              <MaterialIcons name="arrow-drop-up" size={24} color="black" />
+            </TouchableOpacity>
+          )}
+
           <View>
-            <Text>Latitude : {room.location[0]}</Text>
-            <Text>Longitude : {room.location[1]}</Text>
             <MapView
               style={styles.map}
               provider={PROVIDER_GOOGLE}
@@ -175,27 +203,8 @@ const styles = StyleSheet.create({
   reviewsNbr: {
     paddingLeft: 10,
   },
-  wrapper: {},
-  slide1: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#9DD6EB",
-  },
-  slide2: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#97CAE5",
-  },
-  slide3: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#92BBD9",
-  },
   text: {
-    color: "#fff",
+    color: "green",
     fontSize: 30,
     fontWeight: "bold",
   },
@@ -203,5 +212,13 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: 250,
+  },
+  // -------------------------SWIPPER
+  wrapper: {},
+  slide1: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#9DD6EB",
   },
 });

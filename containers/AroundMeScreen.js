@@ -4,8 +4,21 @@ import { StyleSheet } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import LottieView from "lottie-react-native";
+import animationData from "../assets/lotties/airbnb-logo.json";
 
 const AroundMe = () => {
+  const navigation = useNavigation();
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
   // state pour recevoir la permission + state error + state isLoading
 
   const [isLoading, setisLoading] = useState(true);
@@ -48,7 +61,9 @@ const AroundMe = () => {
   }, []);
 
   return isLoading ? (
-    <Text>En cours de chargement !</Text>
+    <View>
+      <Lottie options={defaultOptions} height={400} width={400} />
+    </View>
   ) : (
     <View>
       <MapView
@@ -65,6 +80,9 @@ const AroundMe = () => {
         {rooms.map((room) => {
           return (
             <Marker
+              onPress={() => {
+                navigation.navigate("Room", { id: room._id });
+              }}
               key={room._id}
               coordinate={{
                 latitude: room.location[1],
